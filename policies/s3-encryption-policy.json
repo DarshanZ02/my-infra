@@ -1,0 +1,26 @@
+{
+  "policyName": "S3 Encryption Policy",
+  "policyId": "s3-encryption",
+  "description": "Ensures all S3 buckets enforce server-side encryption using AES-256 or AWS KMS to protect stored data against unauthorized access.",
+  "framework": "SOC2 / ISO27001",
+  "controlMappings": [
+    {
+      "framework": "SOC2",
+      "control": "CC6.1 - Logical and Physical Access Controls"
+    },
+    {
+      "framework": "ISO27001",
+      "control": "A.10.1 - Cryptographic Controls"
+    }
+  ],
+  "requirements": [
+    "All S3 buckets must have server-side encryption enabled.",
+    "Buckets must enforce encryption using AES-256 or AWS-KMS keys.",
+    "Unencrypted S3 buckets must be auto-flagged during compliance scans.",
+    "Bucket policies should deny uploads of unencrypted objects."
+  ],
+  "awsRemediation": {
+    "cli": "aws s3api put-bucket-encryption --bucket <bucket-name> --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'",
+    "console": "Navigate to S3 → Choose Bucket → Properties → Default Encryption → Enable AES-256 or KMS."
+  }
+}
