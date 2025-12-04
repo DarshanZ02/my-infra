@@ -43,6 +43,6 @@ export const findingsListCommand = async (opts = {}) => {
 
     console.log(chalk.green("\n[Done] -> Findings listed successfully.\n"));
   } catch (err) {
-    console.error(chalk.red("❌ Error listing findings: "), err);
+    console.error(chalk.red("[Error] -> Error listing findings: "), err);
   }
 };

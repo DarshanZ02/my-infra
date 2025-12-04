@@ -2,9 +2,7 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-/**
- * Map CLI frameworks → Prowler flags
- */
+/* Map CLI frameworks → Prowler flags */
 function getFrameworkFlag(framework) {
   switch (framework.toLowerCase()) {
     case "hipaa":
@@ -22,9 +20,7 @@ function getFrameworkFlag(framework) {
 }
 
 
-/**
- * Run Prowler scan with optional framework filter
- */
+/* Run Prowler scan with optional framework filter */
 function runProwlerScan(framework = "default") {
   return new Promise((resolve, reject) => {
     console.log(`[Scan] -> Starting Prowler scan (framework: ${framework})`);

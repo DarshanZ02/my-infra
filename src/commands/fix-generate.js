@@ -46,11 +46,11 @@ async function fixGenerateCommand(options) {
 
   console.log(`[Done] -> Fix saved: ${filePath}`);
 
-  //
+  
   // ─────────────────────────────────────────────
   //  CREATE GITHUB PULL REQUEST AUTOMATICALLY
   // ─────────────────────────────────────────────
-  //
+  
 
   const branchName = `fix/${issueId}-${resourceId}`.replace(/[^a-zA-Z0-9\/\-]/g, "_");
   const prTitle = `Fix: ${match.CheckTitle}`;

@@ -39,9 +39,9 @@ async function docsGenerateCommand(options) {
 
   console.log("[Done] -> Documentation saved: ${filePath}");
 
-  //
+  
   // CREATE PR FOR DOCUMENTATION
-  //
+
   console.log("\n[Create] -> Creating GitHub Pull Request...");
   const branchName = `docs/${policyName.replace(/\s+/g, "-").toLowerCase()}`;
   const prTitle = `Documentation: ${policyName}`;

@@ -1,4 +1,3 @@
-// src/commands/aws.js
 const { testAwsConnection } = require('../services/awsService');
 
 async function awsTestCommand() {

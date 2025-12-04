@@ -1,9 +1,8 @@
-// src/services/awsService.js
+
 const { STSClient, GetCallerIdentityCommand } = require('@aws-sdk/client-sts');
 
-/**
- * Create an STS client using default credential provider chain.
- */
+
+ /* Create an STS client using default credential provider chain.*/
 function createStsClient() {
   // If region not set, fallback to 'us-east-1'
   const region = process.env.AWS_REGION || 'us-east-1';
@@ -17,9 +16,9 @@ function createStsClient() {
   });
 }
 
-/**
- * Test AWS connection by calling STS GetCallerIdentity.
- */
+
+ /* Test AWS connection by calling STS GetCallerIdentity.*/
+ 
 async function testAwsConnection() {
   const client = createStsClient();
 
