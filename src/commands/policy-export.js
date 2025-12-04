@@ -5,7 +5,7 @@ const path = require("path");
  * Handles: compliance-pilot policy export --from-comp-ai --type s3-encryption
  */
 async function policyExportCommand(options) {
-  console.log("📦 Exporting policy from Comp AI templates...");
+  console.log("[Export] -> Exporting policy from Comp AI templates...");
 
   const templateType = options.type;
 
@@ -16,15 +16,17 @@ async function policyExportCommand(options) {
     "s3-encryption": "FrameworkEditorPolicyTemplate.json",
     "iam-role": "FrameworkEditorControlTemplate.json",
     "backup-policy": "FrameworkEditorFramework.json",
+    "ec2-security": "ec2-security.json"
   };
 
   const templateFile = templatesMap[templateType];
 
   if (!templateFile) {
-    console.error("❌ Unknown policy type. Supported types:");
+    console.error("[Fail] -> Unknown policy type. Supported types:");
     console.error("- s3-encryption");
     console.error("- iam-role");
     console.error("- backup-policy");
+    console.error("- ec2-security");
     return;
   }
 
@@ -34,9 +36,9 @@ async function policyExportCommand(options) {
   const fullPath = path.join(compAiFolder, templateFile);
 
   if (!fs.existsSync(fullPath)) {
-    console.error("❌ Template file not found:");
+    console.error("[Fail] -> Template file not found:");
     console.error(fullPath);
-    console.error("\n📌 Create folder: comp-ai-seed/");
+    console.error("\nCreate folder: comp-ai-seed/");
     console.error("And place Comp AI templates inside it.");
     return;
   }
@@ -50,8 +52,8 @@ async function policyExportCommand(options) {
 
   fs.writeFileSync(policyOutputFile, jsonData, "utf8");
 
-  console.log(`\n✅ Policy exported successfully!`);
-  console.log(`📄 Saved to: ${policyOutputFile}`);
+  console.log(`\n[Success] -> Policy exported successfully!`);
+  console.log(`Saved to: ${policyOutputFile}`);
 }
 
 module.exports = { policyExportCommand };

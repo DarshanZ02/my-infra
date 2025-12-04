@@ -45,7 +45,7 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
   const client = createGitHubClient();
   const [owner, repo] = process.env.GITHUB_REPO.split("/");
 
-  // 1️⃣ Get the latest commit SHA from main
+  // Get the latest commit SHA from main
   const { data: mainRef } = await client.git.getRef({
     owner,
     repo,
@@ -54,7 +54,7 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
 
   const baseSha = mainRef.object.sha;
 
-  // 2️⃣ If branch exists → delete it safely
+  // If branch exists → delete it safely
   try {
     await client.git.getRef({
       owner,
@@ -62,7 +62,7 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
       ref: `heads/${branchName}`,
     });
 
-    console.log(`⚠️ Branch already exists. Deleting: ${branchName}`);
+    console.log(`[Branch Deleted] -> Branch already exists. Deleting: ${branchName}`);
 
     await client.git.deleteRef({
       owner,
@@ -70,10 +70,10 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
       ref: `heads/${branchName}`,
     });
   } catch (err) {
-    console.log(`ℹ️ Branch does not exist. Creating new one...`);
+    console.log(`[Branch Created] -> Branch does not exist. Creating new one...`);
   }
 
-  // 3️⃣ Create the new branch
+  // Create the new branch
   await client.git.createRef({
     owner,
     repo,
@@ -81,7 +81,7 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
     sha: baseSha,
   });
 
-  // 4️⃣ Prepare commit with fix file content
+  // Prepare commit with fix file content
   const fileContent = fs.readFileSync(filePath, "utf8");
   const encoded = Buffer.from(fileContent).toString("base64");
 
@@ -94,7 +94,7 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
     branch: branchName,
   });
 
-  // 5️⃣ Create PR
+  // Create PR
   const pr = await client.pulls.create({
     owner,
     repo,
@@ -104,7 +104,7 @@ async function createPullRequest(branchName, filePath, prTitle, prBody) {
     base: "main",
   });
 
-  console.log(`🎉 Pull Request Created: ${pr.data.html_url}`);
+  console.log(`[PR Created] -> Pull Request Created: ${pr.data.html_url}`);
 }
 
 

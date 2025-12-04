@@ -2,21 +2,48 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-//
-// RUN PROWLER FAST SCAN (EC2 + IAM + S3)
-//
-function runProwlerScan() {
+/**
+ * Map CLI frameworks → Prowler flags
+ */
+function getFrameworkFlag(framework) {
+  switch (framework.toLowerCase()) {
+    case "hipaa":
+      return "-f hipaa";
+
+    case "soc2":
+      return "-f soc_2";
+
+    case "iso27001":
+      return "-f iso_27001_2022";
+
+    default:
+      return "--service ec2 iam s3"; // FAST default scan
+  }
+}
+
+
+/**
+ * Run Prowler scan with optional framework filter
+ */
+function runProwlerScan(framework = "default") {
   return new Promise((resolve, reject) => {
-    console.log("🚀 Starting FAST Prowler scan (EC2 + IAM + S3)...");
+    console.log(`[Scan] -> Starting Prowler scan (framework: ${framework})`);
 
     const scansDir = path.join(process.cwd(), "scans");
     if (!fs.existsSync(scansDir)) fs.mkdirSync(scansDir);
 
-    const outputName = "latest-scan.asff.json";
-    const outputPath = path.join(scansDir, outputName);
-
-    // Delete old output file
+    const outputPath = path.join(scansDir, "latest-scan.asff.json");
     if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+
+    // Map input framework → Prowler framework names
+    const fwMap = {
+      hipaa: "hipaa_aws",
+      soc2: "soc2_aws",
+      iso27001: "iso27001_2022_aws",
+      default: null
+    };
+
+    const complianceFlag = fwMap[framework] || null;
 
     const args = [
       "run",
@@ -30,13 +57,19 @@ function runProwlerScan() {
 
       "toniblyx/prowler:latest",
 
-      // REAL WORKING FAST SCAN COMMAND
       "aws",
-      "--service", "ec2", "iam", "s3",
       "-M", "json-asff",
       "--no-banner",
-      "--output-file", "latest-scan"
+      "--output-file", "latest-scan",
     ];
+
+    // Add compliance framework
+    if (complianceFlag) {
+      args.push("--compliance", complianceFlag);
+    } else {
+      // Default fast scan
+      args.push("--service", "ec2", "iam", "s3");
+    }
 
     const proc = spawn("docker", args);
 
@@ -44,25 +77,26 @@ function runProwlerScan() {
     proc.stderr.on("data", (d) => console.error(d.toString()));
 
     proc.on("close", (code) => {
-      // Exit code 3 = scan completed but findings exist → NOT an error
       if (code !== 0 && code !== 3) {
         return reject(new Error(`Prowler exited with ${code}`));
       }
 
-      console.log(`✅ Scan saved to: ${outputPath}`);
+      console.log(`[Done] -> Scan saved to: ${outputPath}`);
       resolve(outputPath);
     });
   });
 }
 
-//
-// PARSE ASFF OUTPUT
-//
+
+
+/**
+ * Load parsed ASFF results
+ */
 function loadProwlerResults() {
   const filePath = path.join("scans", "latest-scan.asff.json");
 
   if (!fs.existsSync(filePath)) {
-    console.error("❌ No scan file found:", filePath);
+    console.error("[Fail] -> No scan file found:", filePath);
     return [];
   }
 
@@ -70,24 +104,24 @@ function loadProwlerResults() {
     let raw = fs.readFileSync(filePath, "utf-8").trim();
 
     if (!raw.startsWith("[")) {
-      console.warn("⚠️ Unexpected ASFF format. Trying to recover…");
       raw = "[" + raw.replace(/}\s*{/g, "},{") + "]";
     }
 
     const data = JSON.parse(raw);
-    console.log(`📄 Parsed ${data.length} ASFF findings.`);
 
-    return data.map((f) => ({
+    console.log(`[Done] -> Parsed ${data.length} findings.`);
+
+    return data.map(f => ({
       Severity: f.Severity?.Label || "UNKNOWN",
       Status: f.Compliance?.Status || "UNKNOWN",
       CheckTitle: f.Title || "Unknown",
       ResourceId: f.Resources?.[0]?.Id || "Unknown",
       Description: f.Description || "",
-      Raw: f,
+      Raw: f
     }));
 
   } catch (err) {
-    console.error("❌ Failed to parse ASFF JSON:", err.message);
+    console.error("[Fail] -> Failed to parse ASFF:", err.message);
     return [];
   }
 }

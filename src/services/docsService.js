@@ -37,7 +37,7 @@ Produce clear, professional Markdown.
     return response.choices[0].message.content;
 
   } catch (err) {
-    console.error("❌ Documentation Generation Error:", err.message);
+    console.error("Documentation Generation Error:", err.message);
     return "Error generating documentation.";
   }
 }

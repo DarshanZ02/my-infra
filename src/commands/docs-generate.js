@@ -7,18 +7,18 @@ async function docsGenerateCommand(options) {
   const policyName = options.policy;
 
   if (!policyName) {
-    console.error("❌ Missing policy name. Use: --policy \"Policy Name\"");
+    console.error("[Fail] -> Missing policy name. Use: --policy \"Policy Name\"");
     return;
   }
 
-  console.log("📘 Generating documentation for policy:");
+  console.log("[Generate] -> Generating documentation for policy:");
   console.log(`→ Policy: ${policyName}`);
 
   const policiesDir = path.join(process.cwd(), "policies");
   const policyFile = path.join(policiesDir, `${policyName}.json`);
 
   if (!fs.existsSync(policyFile)) {
-    console.error(`❌ Policy file not found: ${policyFile}`);
+    console.error("[Fail] -> Policy file not found: ${policyFile}");
     return;
   }
 
@@ -37,12 +37,12 @@ async function docsGenerateCommand(options) {
 
   fs.writeFileSync(filePath, docText, "utf8");
 
-  console.log(`📄 Documentation saved: ${filePath}`);
+  console.log("[Done] -> Documentation saved: ${filePath}");
 
   //
   // CREATE PR FOR DOCUMENTATION
   //
-  console.log("\n📤 Creating GitHub Pull Request...");
+  console.log("\n[Create] -> Creating GitHub Pull Request...");
   const branchName = `docs/${policyName.replace(/\s+/g, "-").toLowerCase()}`;
   const prTitle = `Documentation: ${policyName}`;
   const prBody = `
@@ -57,7 +57,7 @@ Generated via **CompliancePilot CLI**.
 
   await createPullRequest(branchName, filePath, prTitle, prBody);
 
-  console.log("\n🎉 Documentation + PR created successfully!");
+  console.log("\n[Success] -> Documentation + PR created successfully!");
 }
 
 module.exports = { docsGenerateCommand };

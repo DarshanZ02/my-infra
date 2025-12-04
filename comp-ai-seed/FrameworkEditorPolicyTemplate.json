@@ -1,0 +1,29 @@
+[
+  {
+    "id": "s3-encryption",
+    "name": "S3 Encryption Policy",
+    "description": "Ensures all S3 buckets have default server-side encryption enabled using AES-256 or AWS KMS.",
+    "requirements": [
+      "All S3 buckets must enforce default encryption",
+      "Public access must be restricted",
+      "Bucket policy must deny unencrypted uploads"
+    ],
+    "controls": [
+      {
+        "id": "s3-encryption-001",
+        "title": "Enable Default Encryption",
+        "text": "Ensure default S3 encryption is enabled using AES-256 or KMS."
+      },
+      {
+        "id": "s3-encryption-002",
+        "title": "Deny Unencrypted Uploads",
+        "text": "Bucket policy must deny any PUT operation without SSE headers."
+      },
+      {
+        "id": "s3-encryption-003",
+        "title": "Block Public Access",
+        "text": "Ensure bucket-level Block Public Access settings are enabled."
+      }
+    ]
+  }
+]

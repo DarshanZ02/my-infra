@@ -1,0 +1,39 @@
+{
+  "id": "ec2-security",
+  "name": "EC2 Security Hardening Policy",
+  "description": "Ensures EC2 instances follow AWS security best practices including IMDSv2 enforcement, IAM role usage, restricted SSH access, and detailed monitoring.",
+  "requirements": [
+    "EC2 instances must enforce IMDSv2",
+    "No EC2 instance should expose SSH (port 22) to the internet",
+    "All EC2 instances must use an IAM instance profile (no long-lived credentials)",
+    "EC2 instances with public IP must have explicit justification",
+    "Detailed monitoring should be enabled for visibility"
+  ],
+  "controls": [
+    {
+      "id": "ec2-001",
+      "title": "Enforce IMDSv2",
+      "text": "Ensure all EC2 instances enforce Instance Metadata Service Version 2 (IMDSv2)."
+    },
+    {
+      "id": "ec2-002",
+      "title": "Restrict SSH Access",
+      "text": "Security groups should not allow ingress from 0.0.0.0/0 to TCP port 22."
+    },
+    {
+      "id": "ec2-003",
+      "title": "Require IAM Instance Roles",
+      "text": "All EC2 instances must have an IAM instance profile assigned to avoid exposing access keys."
+    },
+    {
+      "id": "ec2-004",
+      "title": "Control Public IP Assignments",
+      "text": "Instances with public IPs must be tagged with 'internet-access=true' or equivalent justification."
+    },
+    {
+      "id": "ec2-005",
+      "title": "Enable Detailed Monitoring",
+      "text": "CloudWatch detailed monitoring must be enabled on EC2 instances."
+    }
+  ]
+}
